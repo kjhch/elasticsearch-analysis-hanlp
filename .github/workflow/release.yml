@@ -59,3 +59,4 @@ jobs:
           name: Release ${{ steps.version.outputs.version }}
           files: build/distributions/${{ steps.version.outputs.zip_name }}
           generate_release_notes: true
+          draft: true
