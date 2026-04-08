@@ -40,7 +40,7 @@ public class HanLPTokenizerFactory extends AbstractTokenizerFactory {
     private final Configuration configuration;
 
     public HanLPTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings, HanLPType hanLPType) {
-        super(indexSettings, settings, name);
+        super(name);
         this.hanLPType = hanLPType;
         this.configuration = new Configuration(env, settings);
     }

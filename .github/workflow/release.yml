@@ -1,0 +1,61 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew assemble
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep 'elasticsearchVersion' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "zip_name=elasticsearch-analysis-hanlp-${VERSION}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing release and tag
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          # 删除已有 Release
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${TAG}" | jq -r '.id // empty')
+          if [ -n "$RELEASE_ID" ]; then
+            curl -s -X DELETE -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/${RELEASE_ID}"
+            echo "Deleted existing release ${TAG}"
+          fi
+          # 删除已有 tag
+          git push origin ":refs/tags/${TAG}" 2>/dev/null || true
+
+      - name: Create tag
+        run: |
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          files: build/distributions/${{ steps.version.outputs.zip_name }}
+          generate_release_notes: true

@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath "org.elasticsearch.gradle:build-tools:${elasticsearchVersion}"
-    }
-}
-
 group = 'org.elasticsearch'
 version = "$elasticsearchVersion"
 description = 'elasticsearch-analysis-hanlp'
@@ -17,22 +7,14 @@ apply plugin: 'idea'
 apply plugin: 'elasticsearch.esplugin'
 
 esplugin {
-    name 'analysis-hanlp'
-    description 'HanLP Analyzer for ElasticSearch'
-    classname 'org.elasticsearch.plugin.analysis.hanlp.AnalysisHanLPPlugin'
+    name = 'analysis-hanlp'
+    description = 'HanLP Analyzer for ElasticSearch'
+    classname = 'org.elasticsearch.plugin.analysis.hanlp.AnalysisHanLPPlugin'
     licenseFile = rootProject.file('LICENSE.txt')
     noticeFile = rootProject.file('NOTICE.txt')
 }
 
 jar {
-    archiveBaseName.set(rootProject.name)
-}
-
-javadocJar {
-    archiveBaseName.set(rootProject.name)
-}
-
-sourcesJar {
     archiveBaseName.set(rootProject.name)
 }
 
@@ -43,73 +25,29 @@ assemble {
     }
 }
 
-configurations.all() {
-    Configuration configuration ->
-        configuration.resolutionStrategy.failOnVersionConflict()
-        configuration.resolutionStrategy.force(['commons-codec:commons-codec:1.15'])
-        configuration.resolutionStrategy.force(['commons-logging:commons-logging:1.2'])
-        configuration.resolutionStrategy.force(['org.apache.httpcomponents:httpclient:4.5.13'])
-        configuration.resolutionStrategy.force(['org.apache.httpcomponents:httpcore:4.4.14'])
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.elasticsearch.gradle:build-tools:${elasticsearchVersion}"
+    }
 }
 
+repositories {
+    mavenCentral()
+}
 dependencies {
-    compile 'com.hankcs:hanlp:portable-1.7.8'
-    compile 'commons-codec:commons-codec:1.15'
-    compile 'commons-logging:commons-logging:1.2'
-    compile 'org.apache.httpcomponents:httpclient:4.5.13'
-    compile 'org.apache.httpcomponents:httpcore:4.4.14'
+    implementation 'com.hankcs:hanlp:portable-1.8.6'
+//    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 }
 
-checkstyle {
-    sourceSets = [project.sourceSets.main]
-}
-
-checkstyleMain {
-    excludes = ['**/PorterStemmer.java']
-}
-
-forbiddenApisMain {
-    excludes = [
-            '**/AnalysisHanLPPlugin.class',
-            '**/PorterStemmer.class',
-            '**/RemoteDictConfig.class',
-            '**/DictionaryFileCache.class',
-            '**/ExtMonitor.class',
-            '**/model/*.class',
-            '**/CoreStopWordDictionary.class'
-    ]
-}
-
-forbiddenPatterns {
-    forbiddenPatterns.enabled = false;
-}
-
-licenseHeaders {
-    licenseHeaders.enabled = false
-}
-
-dependencyLicenses {
-    dependencyLicenses.enabled = false
-}
-
-thirdPartyAudit {
-    thirdPartyAudit.enabled = false
-}
-
-validateNebulaPom {
-    validateNebulaPom.enabled = false
-}
-
-loggerUsageCheck {
-    loggerUsageCheck.enabled = false
-}
 
 test {
     systemProperty 'tests.security.manager', 'false'
-}
-
-testingConventions {
-    testingConventions.enabled = false
 }
 
 javadoc {
