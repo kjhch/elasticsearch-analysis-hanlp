@@ -5,9 +5,6 @@ import com.hankcs.hanlp.seg.Other.DoubleArrayTrieSegment;
 import com.hankcs.hanlp.seg.Segment;
 import org.apache.lucene.analysis.Analyzer;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 /**
  * Project: elasticsearch-analysis-hanlp
  * Description: 极速词典分析器
@@ -29,8 +26,7 @@ public class HanLPSpeedAnalyzer extends Analyzer {
     @Override
     protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
         return new Analyzer.TokenStreamComponents(TokenizerBuilder.tokenizer(
-                AccessController.doPrivileged(
-                        (PrivilegedAction<Segment>) () -> new DoubleArrayTrieSegment().enableCustomDictionary(false)),
+                        new DoubleArrayTrieSegment().enableCustomDictionary(false),
                 configuration));
     }
 

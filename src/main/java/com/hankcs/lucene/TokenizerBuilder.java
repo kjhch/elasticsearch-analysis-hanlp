@@ -6,8 +6,6 @@ import com.hankcs.hanlp.seg.Segment;
 import com.hankcs.hanlp.seg.common.Term;
 import org.apache.lucene.analysis.Tokenizer;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ public class TokenizerBuilder {
      */
     public static Tokenizer tokenizer(Segment segment, Configuration configuration) {
         Segment seg = segment(segment, configuration);
-        return AccessController.doPrivileged((PrivilegedAction<HanLPTokenizer>)() -> new HanLPTokenizer(seg, configuration));
+        return new HanLPTokenizer(seg, configuration);
     }
 
     /**

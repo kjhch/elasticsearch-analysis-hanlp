@@ -14,8 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,46 +45,41 @@ public class DictionaryFileCache {
         if (!file.exists()) {
             return;
         }
-        List<DictionaryFile> dictionaryFiles = AccessController.doPrivileged((PrivilegedAction<List<DictionaryFile>>) () -> {
-            List<DictionaryFile> dictionaryFileList = new ArrayList<>();
-            DataInputStream in = null;
-            try {
-                in = new DataInputStream(new FileInputStream(file));
-                int size = in.readInt();
-                for (int i = 0; i < size; i++) {
-                    DictionaryFile dictionaryFile = new DictionaryFile();
-                    dictionaryFile.read(in);
-                    dictionaryFileList.add(dictionaryFile);
-                }
-            } catch (IOException e) {
-                logger.debug("can not load custom dictionary cache file", e);
-            } finally {
-                IOUtils.closeWhileHandlingException(in);
+        List<DictionaryFile> dictionaryFileList = new ArrayList<>();
+        DataInputStream in = null;
+        try {
+            in = new DataInputStream(new FileInputStream(file));
+            int size = in.readInt();
+            for (int i = 0; i < size; i++) {
+                DictionaryFile dictionaryFile = new DictionaryFile();
+                dictionaryFile.read(in);
+                dictionaryFileList.add(dictionaryFile);
             }
-            return dictionaryFileList;
-        });
+        } catch (IOException e) {
+            logger.debug("can not load custom dictionary cache file", e);
+        } finally {
+            IOUtils.closeWhileHandlingException(in);
+        }
+        List<DictionaryFile> dictionaryFiles = dictionaryFileList;
         setCustomDictionaryFileList(dictionaryFiles);
     }
 
     public static void writeCache() {
-        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-            DataOutputStream out = null;
-            try {
-                logger.info("begin write down HanLP custom dictionary file cache, file path: {}, custom dictionary file list: {}",
-                        cachePath.toFile().getAbsolutePath(), Arrays.toString(customDictionaryFileList.toArray()));
-                out = new DataOutputStream(new FileOutputStream(cachePath.toFile()));
-                out.writeInt(customDictionaryFileList.size());
-                for (DictionaryFile dictionaryFile : customDictionaryFileList) {
-                    dictionaryFile.write(out);
-                }
-                logger.info("write down HanLP custom dictionary file cache successfully");
-            } catch (IOException e) {
-                logger.debug("can not write down HanLP custom dictionary file cache", e);
-            } finally {
-                IOUtils.closeWhileHandlingException(out);
+        DataOutputStream out = null;
+        try {
+            logger.info("begin write down HanLP custom dictionary file cache, file path: {}, custom dictionary file list: {}",
+                    cachePath.toFile().getAbsolutePath(), Arrays.toString(customDictionaryFileList.toArray()));
+            out = new DataOutputStream(new FileOutputStream(cachePath.toFile()));
+            out.writeInt(customDictionaryFileList.size());
+            for (DictionaryFile dictionaryFile : customDictionaryFileList) {
+                dictionaryFile.write(out);
             }
-            return null;
-        });
+            logger.info("write down HanLP custom dictionary file cache successfully");
+        } catch (IOException e) {
+            logger.debug("can not write down HanLP custom dictionary file cache", e);
+        } finally {
+            IOUtils.closeWhileHandlingException(out);
+        }
     }
 
     public static List<DictionaryFile> getCustomDictionaryFileList() {

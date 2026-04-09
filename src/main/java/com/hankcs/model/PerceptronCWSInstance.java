@@ -9,8 +9,6 @@ import org.elasticsearch.common.io.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * Project: elasticsearch-analysis-hanlp
@@ -38,22 +36,20 @@ public class PerceptronCWSInstance {
     private final LinearModel linearModel;
 
     private PerceptronCWSInstance() {
+        LinearModel model = null;
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.PerceptronCWSModelPath)
+                HanLP.Config.PerceptronCWSModelPath
         ).toAbsolutePath())) {
-            linearModel = AccessController.doPrivileged((PrivilegedAction<LinearModel>) () -> {
-                try {
-                    return new LinearModel(HanLP.Config.PerceptronCWSModelPath);
-                } catch (IOException e) {
-                    logger.error(() ->
-                            new ParameterizedMessage("load perceptron cws model from [{}] error", HanLP.Config.PerceptronCWSModelPath), e);
-                    return null;
-                }
-            });
+            try {
+                model = new LinearModel(HanLP.Config.PerceptronCWSModelPath);
+            } catch (IOException e) {
+                logger.error(() ->
+                        new ParameterizedMessage("load perceptron cws model from [{}] error", HanLP.Config.PerceptronCWSModelPath), e);
+            }
         } else {
             logger.warn("can not find perceptron cws model from [{}]", HanLP.Config.PerceptronCWSModelPath);
-            linearModel = null;
         }
+        linearModel = model;
     }
 
     public LinearModel getLinearModel() {

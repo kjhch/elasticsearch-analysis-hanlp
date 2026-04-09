@@ -16,8 +16,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.List;
 
 /**
@@ -72,22 +70,20 @@ public class CoreStopWordDictionary {
     }
 
     static {
+        StopWordDictionary dict = null;
         ByteArray byteArray = isNeedUpdate() ? null :
-                AccessController.doPrivileged((PrivilegedAction<ByteArray>) () ->
-                        ByteArray.createByteArray(Config.CoreStopWordDictionaryPath + Predefine.BIN_EXT));
+                ByteArray.createByteArray(Config.CoreStopWordDictionaryPath + Predefine.BIN_EXT);
         if (byteArray == null) {
             try {
-                dictionary = AccessController.doPrivileged((PrivilegedAction<StopWordDictionary>) () -> {
-                    try {
-                        return new StopWordDictionary(Config.CoreStopWordDictionaryPath);
-                    } catch (IOException e) {
-                        logger.error(() -> new ParameterizedMessage("load stop word dictionary from [{}] error",
-                                Config.CoreStopWordDictionaryPath), e);
-                        return null;
-                    }
-                });
-                if (dictionary != null) {
-                    AccessController.doPrivileged((PrivilegedAction<Boolean>) CoreStopWordDictionary::save);
+                try {
+                    dict = new StopWordDictionary(Config.CoreStopWordDictionaryPath);
+                } catch (IOException e) {
+                    logger.error(() -> new ParameterizedMessage("load stop word dictionary from [{}] error",
+                            Config.CoreStopWordDictionaryPath), e);
+                    dict = null;
+                }
+                if (dict != null) {
+                    CoreStopWordDictionary.save();
                 }
             } catch (Exception e) {
                 logger.error(() ->
@@ -95,9 +91,10 @@ public class CoreStopWordDictionary {
                 throw new RuntimeException("load stop word dictionary from [" + Config.CoreStopWordDictionaryPath + "] error");
             }
         } else {
-            dictionary = new StopWordDictionary();
-            dictionary.load(byteArray);
+            dict = new StopWordDictionary();
+            dict.load(byteArray);
         }
+        dictionary = dict;
     }
 
     private static boolean save() {
@@ -117,18 +114,18 @@ public class CoreStopWordDictionary {
 
     private static boolean isNeedUpdate() {
         File binFile = new File(Config.CoreStopWordDictionaryPath + Predefine.BIN_EXT);
-        if (!AccessController.doPrivileged((PrivilegedAction<Boolean>) binFile::exists)) {
+        if (!binFile.exists()) {
             return true;
         }
         File txtFile = new File(Config.CoreStopWordDictionaryPath);
-        if (!AccessController.doPrivileged((PrivilegedAction<Boolean>) txtFile::exists)) {
+        if (!txtFile.exists()) {
             logger.error("can not find stop word dictionary from [{}]", Config.CoreStopWordDictionaryPath);
             throw new IllegalArgumentException("can not find stop word dictionary from [" + Config.CoreStopWordDictionaryPath + "]");
         }
         long binLastModified = binFile.lastModified();
         long txtLastModified = txtFile.lastModified();
         if (txtLastModified >= binLastModified) {
-            AccessController.doPrivileged((PrivilegedAction<Boolean>) binFile::delete);
+            binFile.delete();
             return true;
         }
         return false;

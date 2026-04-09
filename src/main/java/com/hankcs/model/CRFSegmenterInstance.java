@@ -9,8 +9,6 @@ import org.elasticsearch.common.io.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * Project: elasticsearch-analysis-hanlp
@@ -38,21 +36,19 @@ public class CRFSegmenterInstance {
     private final CRFSegmenter segmenter;
 
     private CRFSegmenterInstance() {
+        CRFSegmenter seg = null;
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.CRFCWSModelPath)
+                HanLP.Config.CRFCWSModelPath
         ).toAbsolutePath())) {
-            segmenter = AccessController.doPrivileged((PrivilegedAction<CRFSegmenter>) () -> {
-                try {
-                    return new CRFSegmenter(HanLP.Config.CRFCWSModelPath);
-                } catch (IOException e) {
-                    logger.error(() -> new ParameterizedMessage("load crf cws model from [{}] error", HanLP.Config.CRFCWSModelPath), e);
-                    return null;
-                }
-            });
+            try {
+                seg = new CRFSegmenter(HanLP.Config.CRFCWSModelPath);
+            } catch (IOException e) {
+                logger.error(() -> new ParameterizedMessage("load crf cws model from [{}] error", HanLP.Config.CRFCWSModelPath), e);
+            }
         } else {
             logger.warn("can not find crf cws model from [{}]", HanLP.Config.CRFCWSModelPath);
-            segmenter = null;
         }
+        segmenter = seg;
     }
 
     public CRFSegmenter getSegmenter() {

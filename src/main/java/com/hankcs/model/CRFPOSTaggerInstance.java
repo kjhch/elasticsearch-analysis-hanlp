@@ -9,8 +9,6 @@ import org.elasticsearch.common.io.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * Project: elasticsearch-analysis-hanlp
@@ -38,21 +36,19 @@ public class CRFPOSTaggerInstance {
     private final CRFPOSTagger tagger;
 
     private CRFPOSTaggerInstance() {
+        CRFPOSTagger t = null;
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.CRFPOSModelPath)
+                HanLP.Config.CRFPOSModelPath
         ).toAbsolutePath())) {
-            tagger = AccessController.doPrivileged((PrivilegedAction<CRFPOSTagger>) () -> {
-                try {
-                    return new CRFPOSTagger(HanLP.Config.CRFPOSModelPath);
-                } catch (IOException e) {
-                    logger.error(() -> new ParameterizedMessage("load crf pos model from [{}] error", HanLP.Config.CRFPOSModelPath), e);
-                    return null;
-                }
-            });
+            try {
+                t = new CRFPOSTagger(HanLP.Config.CRFPOSModelPath);
+            } catch (IOException e) {
+                logger.error(() -> new ParameterizedMessage("load crf pos model from [{}] error", HanLP.Config.CRFPOSModelPath), e);
+            }
         } else {
             logger.warn("can not find crf pos model from [{}]", HanLP.Config.CRFPOSModelPath);
-            tagger = null;
         }
+        tagger = t;
     }
 
     public CRFPOSTagger getTagger() {

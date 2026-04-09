@@ -8,9 +8,6 @@ import com.hankcs.model.PerceptronNERInstance;
 import com.hankcs.model.PerceptronPOSInstance;
 import org.apache.lucene.analysis.Analyzer;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 /**
  * Project: elasticsearch-analysis-hanlp
  * Description: NLP分析器
@@ -33,12 +30,12 @@ public class HanLPNLPAnalyzer extends Analyzer {
     protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
         return new Analyzer.TokenStreamComponents(
                 TokenizerBuilder.tokenizer(
-                        AccessController.doPrivileged((PrivilegedAction<Segment>) () ->
                                 new PerceptronLexicalAnalyzer(
                                         PerceptronCWSInstance.getInstance().getLinearModel(),
                                         PerceptronPOSInstance.getInstance().getLinearModel(),
                                         PerceptronNERInstance.getInstance().getLinearModel()
-                                )),
+                                )
+                        ,
                         configuration));
     }
 }

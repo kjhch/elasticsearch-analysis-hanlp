@@ -8,9 +8,6 @@ import com.hankcs.model.CRFPOSTaggerInstance;
 import com.hankcs.model.CRFSegmenterInstance;
 import org.apache.lucene.analysis.Analyzer;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 /**
  * Project: elasticsearch-analysis-hanlp
  * Description: CRF分析器
@@ -34,29 +31,29 @@ public class HanLPCRFAnalyzer extends Analyzer {
         if (CRFPOSTaggerInstance.getInstance().getTagger() == null) {
             return new TokenStreamComponents(
                     TokenizerBuilder.tokenizer(
-                            AccessController.doPrivileged((PrivilegedAction<Segment>) () ->
                                     new CRFLexicalAnalyzer(
                                             CRFSegmenterInstance.getInstance().getSegmenter()
-                                    )),
+                                    )
+                            ,
                             configuration));
         } else if (CRFNERecognizerInstance.getInstance().getRecognizer() == null) {
             return new TokenStreamComponents(
                     TokenizerBuilder.tokenizer(
-                            AccessController.doPrivileged((PrivilegedAction<Segment>) () ->
                                     new CRFLexicalAnalyzer(
                                             CRFSegmenterInstance.getInstance().getSegmenter(),
                                             CRFPOSTaggerInstance.getInstance().getTagger()
-                                    )),
+                                    )
+                            ,
                             configuration));
         } else {
             return new TokenStreamComponents(
                     TokenizerBuilder.tokenizer(
-                            AccessController.doPrivileged((PrivilegedAction<Segment>) () ->
                                     new CRFLexicalAnalyzer(
                                             CRFSegmenterInstance.getInstance().getSegmenter(),
                                             CRFPOSTaggerInstance.getInstance().getTagger(),
                                             CRFNERecognizerInstance.getInstance().getRecognizer()
-                                    )),
+                                    )
+                            ,
                             configuration));
         }
     }

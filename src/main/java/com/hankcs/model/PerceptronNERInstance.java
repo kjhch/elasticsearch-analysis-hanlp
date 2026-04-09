@@ -9,8 +9,6 @@ import org.elasticsearch.common.io.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * Project: elasticsearch-analysis-hanlp
@@ -38,22 +36,20 @@ public class PerceptronNERInstance {
     private final LinearModel linearModel;
 
     private PerceptronNERInstance() {
+        LinearModel model = null;
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.PerceptronNERModelPath)
+                HanLP.Config.PerceptronNERModelPath
         ).toAbsolutePath())) {
-            linearModel = AccessController.doPrivileged((PrivilegedAction<LinearModel>) () -> {
-                try {
-                    return new LinearModel(HanLP.Config.PerceptronNERModelPath);
-                } catch (IOException e) {
-                    logger.error(() ->
-                            new ParameterizedMessage("load perceptron ner model from [{}] error", HanLP.Config.PerceptronNERModelPath), e);
-                    return null;
-                }
-            });
+            try {
+                model = new LinearModel(HanLP.Config.PerceptronNERModelPath);
+            } catch (IOException e) {
+                logger.error(() ->
+                        new ParameterizedMessage("load perceptron ner model from [{}] error", HanLP.Config.PerceptronNERModelPath), e);
+            }
         } else {
             logger.warn("can not find perceptron ner model from [{}]", HanLP.Config.PerceptronNERModelPath);
-            linearModel = null;
         }
+        linearModel = model;
     }
 
     public LinearModel getLinearModel() {

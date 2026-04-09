@@ -18,8 +18,6 @@ import org.elasticsearch.common.util.set.Sets;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -88,16 +86,11 @@ public class SegmentWrapper {
         if (iterator != null && iterator.hasNext()) return iterator.next();
         String line = readLine();
         if (line == null) return null;
-        List<Term> termList = AccessController.doPrivileged((PrivilegedAction<List<Term>>) () -> {
-            char[] text = line.toCharArray();
-            if (configuration != null && configuration.isEnableNormalization()) {
-                AccessController.doPrivileged((PrivilegedAction) () -> {
-                    CharTable.normalization(text);
-                    return null;
-                });
-            }
-            return segment.seg(text);
-        });
+        char[] text = line.toCharArray();
+        if (configuration != null && configuration.isEnableNormalization()) {
+            CharTable.normalization(text);
+        }
+        List<Term> termList = segment.seg(text);
         if (termList.size() == 0) return null;
         for (Term term : termList) {
             term.offset += offset;

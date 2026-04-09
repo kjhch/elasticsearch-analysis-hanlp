@@ -19,8 +19,6 @@ import org.elasticsearch.plugins.Plugin;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +62,7 @@ public class AnalysisHanLPPlugin extends Plugin implements AnalysisPlugin {
         extra.put("hanlp_standard", HanLPTokenizerFactory::getHanLPStandardTokenizerFactory);
         extra.put("hanlp_index", HanLPTokenizerFactory::getHanLPIndexTokenizerFactory);
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.PerceptronCWSModelPath)
+                HanLP.Config.PerceptronCWSModelPath
         ).toAbsolutePath())) {
             extra.put("hanlp_nlp", HanLPTokenizerFactory::getHanLPNLPTokenizerFactory);
         } else {
@@ -72,7 +70,7 @@ public class AnalysisHanLPPlugin extends Plugin implements AnalysisPlugin {
                     HanLP.Config.PerceptronCWSModelPath);
         }
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.CRFCWSModelPath)
+                HanLP.Config.CRFCWSModelPath
         ).toAbsolutePath())) {
             extra.put("hanlp_crf", HanLPTokenizerFactory::getHanLPCRFTokenizerFactory);
         } else {
@@ -94,7 +92,7 @@ public class AnalysisHanLPPlugin extends Plugin implements AnalysisPlugin {
         extra.put("hanlp_standard", HanLPAnalyzerProvider::getHanLPStandardAnalyzerProvider);
         extra.put("hanlp_index", HanLPAnalyzerProvider::getHanLPIndexAnalyzerProvider);
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.PerceptronCWSModelPath)
+                HanLP.Config.PerceptronCWSModelPath
         ).toAbsolutePath())) {
             extra.put("hanlp_nlp", HanLPAnalyzerProvider::getHanLPNLPAnalyzerProvider);
         } else {
@@ -102,7 +100,7 @@ public class AnalysisHanLPPlugin extends Plugin implements AnalysisPlugin {
                     HanLP.Config.PerceptronCWSModelPath);
         }
         if (FileSystemUtils.exists(Paths.get(
-                AccessController.doPrivileged((PrivilegedAction<String>) () -> HanLP.Config.CRFCWSModelPath)
+                HanLP.Config.CRFCWSModelPath
         ).toAbsolutePath())) {
             extra.put("hanlp_crf", HanLPAnalyzerProvider::getHanLPCRFAnalyzerProvider);
         } else {

@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * Project: elasticsearch-analysis-hanlp
@@ -69,10 +67,7 @@ public class RemoteMonitor implements Runnable {
     @Override
     public void run() {
         SpecialPermission.check();
-        AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
-            runUnprivileged();
-            return null;
-        });
+        runUnprivileged();
     }
 
     /**
