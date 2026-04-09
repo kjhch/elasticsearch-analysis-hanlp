@@ -1,0 +1,28 @@
+ALL-UNNAMED:
+  - manage_threads
+  - set_https_connection_properties
+  - outbound_network
+  - load_native_libraries
+  - files:
+      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/"
+        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/custom/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/organization/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/other/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/person/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/pinyin/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/place/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/synonym/"
+#        mode: read_write
+#      - path: "/usr/share/elasticsearch/plugins/analysis-hanlp/data/dictionary/tc/"
+#        mode: read_write
