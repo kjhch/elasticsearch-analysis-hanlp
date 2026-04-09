@@ -65,7 +65,7 @@ public class Configuration {
         this.enableTraditionalChineseMode = settings.get("enable_traditional_chinese_mode", "false").equals("true");
         this.enableStopDictionary = settings.get("enable_stop_dictionary", "false").equals("true");
         this.enablePartOfSpeechTagging = settings.get("enable_part_of_speech_tagging", "false").equals("true");
-        this.enableRemoteDict = settings.get("enable_remote_dict", "true").equals("true");
+        this.enableRemoteDict = settings.get("enable_remote_dict", "false").equals("true");
         this.enableNormalization = settings.get("enable_normalization", "false").equals("true");
         this.enableOffset = settings.get("enable_offset", "true").equals("true");
         this.enableCustomConfig = settings.get("enable_custom_config", "false").equals("true");
