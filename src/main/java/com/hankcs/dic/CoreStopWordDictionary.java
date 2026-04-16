@@ -15,7 +15,6 @@ import org.elasticsearch.core.IOUtils;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -70,31 +69,21 @@ public class CoreStopWordDictionary {
     }
 
     static {
-        StopWordDictionary dict = null;
         ByteArray byteArray = isNeedUpdate() ? null :
                 ByteArray.createByteArray(Config.CoreStopWordDictionaryPath + Predefine.BIN_EXT);
         if (byteArray == null) {
             try {
-                try {
-                    dict = new StopWordDictionary(Config.CoreStopWordDictionaryPath);
-                } catch (IOException e) {
-                    logger.error(() -> new ParameterizedMessage("load stop word dictionary from [{}] error",
-                            Config.CoreStopWordDictionaryPath), e);
-                    dict = null;
-                }
-                if (dict != null) {
-                    CoreStopWordDictionary.save();
-                }
+                dictionary = new StopWordDictionary(Config.CoreStopWordDictionaryPath);
+                CoreStopWordDictionary.save();
             } catch (Exception e) {
                 logger.error(() ->
                         new ParameterizedMessage("load stop word dictionary from [{}] error", Config.CoreStopWordDictionaryPath), e);
                 throw new RuntimeException("load stop word dictionary from [" + Config.CoreStopWordDictionaryPath + "] error");
             }
         } else {
-            dict = new StopWordDictionary();
-            dict.load(byteArray);
+            dictionary = new StopWordDictionary();
+            dictionary.load(byteArray);
         }
-        dictionary = dict;
     }
 
     private static boolean save() {
