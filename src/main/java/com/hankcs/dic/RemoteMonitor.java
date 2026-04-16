@@ -105,7 +105,7 @@ public class RemoteMonitor implements Runnable {
                     loadRemoteCustomWords(response);
                 }
             } else if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
-                logger.info("remote_ext_dict {} is without modified", location);
+                logger.debug("remote_ext_dict {} is without modified", location);
             } else {
                 logger.info("remote_ext_dict {} return bad code {}", location, response.getStatusLine().getStatusCode());
             }
