@@ -55,3 +55,5 @@ testfixtures_shared/
 
 # These are generated from .ci/jobs.t
 .ci/jobs/
+
+src/main/plugin-metadata/data/model/*
